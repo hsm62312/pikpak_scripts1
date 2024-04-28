@@ -24,11 +24,12 @@ jobs:
         run: npm install 
       - name: Run a script and save output
         run: node main.js > output.txt
-      - name: Send mail with output file
-      uses: dawidd6/action-send-mail@v2
-  with:
+# 下面是新添加的邮件发送步骤
+      - name: Send mail
+        uses: dawidd6/action-send-mail@v2
+        with:
     # SMTP服务器配置
-          server_address: smtp.gmail.com
+    server_address: smtp.gmail.com
           server_port: 465
     # SMTP用户名和密码
     # 使用GitHub的秘密配置信息来保护您的认证数据
