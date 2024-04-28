@@ -33,7 +33,7 @@ jobs:
         uses: dawidd6/action-send-mail@v2
         with:
           server_address: smtp.sina.com
-          server_port: 587
+          server_port: 465
           username: ${{ secrets.SMTP_USERNAME }}
           password: ${{ secrets.SMTP_PASSWORD }}
           subject: Scheduled CI Execution Result
