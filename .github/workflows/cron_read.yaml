@@ -2,42 +2,25 @@ name: Scheduled Node.js CI
 
 on:
   schedule:
-    - cron: '0 0 * * *'
-  workflow_dispatch:
+    - cron: "0 0 * * *"
+  workflow_dispatch: # 添加这行以允许手动触发
 
 jobs:
-  build_and_notify:
+  build:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 10 # 设置作业超时时间为10分钟
 
     strategy:
       matrix:
-        node-version: [20.x]
+        node-version: [20.x] 
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v3 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
       - name: Install dependencies
-        run: npm install
+        run: npm install 
       - name: Run a script
-        run: node main.js
-      - name: Install dependencies
-        run: npm install
-      - name: Run a script and save output
-        run: node main.js > output.txt
-
-      - name: Send mail with output file
-        uses: dawidd6/action-send-mail@v2
-        with:
-          server_address: smtp-mail.outlook.com
-          server_port: 587
-          username: ${{ secrets.SMTP_USERNAME }}
-          password: ${{ secrets.SMTP_PASSWORD }}
-          subject: Scheduled CI Execution Result
-          body: The output of the CI execution is attached.
-          to: hsm623@gmail.com
-          from: CI System <no-reply@example.com>
-          attachments: output.txt
+        run: node main.js 
