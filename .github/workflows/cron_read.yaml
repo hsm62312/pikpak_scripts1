@@ -1,10 +1,3 @@
-name: Scheduled Node.js CI
-
-on:
-  schedule:
-    - cron: '0 0 * * *'
-  workflow_dispatch:
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -15,28 +8,33 @@ jobs:
         node-version: [20.x]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v3 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
       - name: Install dependencies
-        run: npm install
-      - name: Run a script
-        run: node main.js
-      # 下面是新添加的邮件发送步骤
-      - name: Send mail
-        uses: dawidd6/action-send-mail@v2
-        with:
-          # Server settings
+        run: npm install 
+      - name: Run a script and save output
+        run: node main.js > output.txt
+      - name: Send mail with output file
+      uses: dawidd6/action-send-mail@v2
+  with:
+    # SMTP服务器配置
           server_address: smtp.gmail.com
           server_port: 465
-          # Authentication
-          username: ${{ secrets.EMAIL_USERNAME }}
-          password: ${{ secrets.EMAIL_PASSWORD }}
-          # Email settings 
-          subject: Scheduled CI Execution Result
-          # Assuming 'output' is the content you want to send
-          body: file://path/to/output.txt  
-          to: hsm623@gmail.com
-          from: CI System <no-reply@example.com>
+    # SMTP用户名和密码
+    # 使用GitHub的秘密配置信息来保护您的认证数据
+    username: ${{ secrets.EMAIL_USERNAME }}
+    password: ${{ secrets.EMAIL_PASSWORD }}
+    # 邮件配置
+    subject: CI Execution Output File
+    # 要发送的邮件正文
+    body: The output of the CI execution is attached.
+    # 收件人电子邮箱地址
+    to: hsm623@gmail.com
+    # 发件人信息
+    from: CI System <noreply@example.com>
+    # 邮件附件列表，可以是多个文件
+    attachments: |
+      output.txt
