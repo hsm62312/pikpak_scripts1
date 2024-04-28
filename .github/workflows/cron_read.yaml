@@ -2,13 +2,13 @@ name: Scheduled Node.js CI
 
 on:
   schedule:
-    - cron: "0 0 * * *"
-  workflow_dispatch: # Enables manual triggering
+    - cron: '0 0 * * *'
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 10 # Sets the job timeout to 10 minutes
+    timeout-minutes: 10
 
     strategy:
       matrix:
@@ -16,26 +16,27 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-        with:
-          fetch-depth: '0' # 获取完整的历史，以便计算版本信息等
-          persist-credentials: true # 允许actions/checkout 配置git凭证
-
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-
       - name: Install dependencies
         run: npm install
-
       - name: Run a script
         run: node main.js
-      
-      # 下面是进行git提交和推送的步骤
-      - name: Commit and push if there are changes
-        run: |
-          git config --global user.name 'GitHub Actions'
-          git config --global user.email 'hsm623@gmail.com'
-          git add -A
-          git commit -m "CI: Node.js Scheduled Build" -a || echo "No changes to commit"
-          git push
+      # 下面是新添加的邮件发送步骤
+      - name: Send mail
+        uses: dawidd6/action-send-mail@v2
+        with:
+          # Server settings
+          server_address: smtp.gmail.com
+          server_port: 465
+          # Authentication
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+          # Email settings 
+          subject: Scheduled CI Execution Result
+          # Assuming 'output' is the content you want to send
+          body: file://path/to/output.txt  
+          to: hsm623@gmail.com
+          from: CI System <no-reply@example.com>
